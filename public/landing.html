@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matstoree Uploader — Berbagi File Sementara</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-grid" aria-hidden="true"></div>
+
+<nav class="navbar">
+  <a href="/" class="brand">
+    <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path d="M6 2h12M6 22h12M8 2c0 4 4 6 4 8s-4 4-4 8M16 2c0 4-4 6-4 8s4 4 4 8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand-text">
+      <span class="brand-title">Matstoree Uploader</span>
+      <span class="brand-sub">Berbagi file sementara</span>
+    </span>
+  </a>
+  <div class="nav-right">
+    <div class="nav-links" id="navLinks">
+      <a href="/upload">Unggah</a>
+      <a href="/documentation">Dokumentasi</a>
+      <a href="/admin">Admin</a>
+    </div>
+    <button id="themeToggle" class="theme-toggle" aria-label="Ganti tema" type="button">
+      <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.5A9 9 0 1 1 11.5 3a7 7 0 0 0 9.5 9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg id="iconSun" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke-linecap="round"/></svg>
+    </button>
+    <button id="navToggle" class="nav-toggle" aria-label="Buka menu" aria-expanded="false" type="button">
+      <svg id="iconBurger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/></svg>
+      <svg id="iconClose" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+<main class="hero-main">
+  <section class="hero">
+    <span class="hero-eyebrow">Berbagi file sementara</span>
+    <h1 class="hero-title">Bagikan file Anda, terhapus otomatis sesuai jadwal.</h1>
+    <p class="hero-sub">Unggah file, tentukan masa berlakunya, lalu dapatkan tautannya. Tanpa perlu membuat akun.</p>
+
+    <div class="hero-actions">
+      <a href="/upload" class="btn btn-primary btn-hero">Unggah File</a>
+      <a href="/documentation" class="btn btn-outline btn-hero">Dokumentasi</a>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span>Matstoree Uploader — file terhapus otomatis sesuai jadwal.</span>
+</footer>
+
+<script>
+  const themeToggle = document.getElementById('themeToggle');
+  const iconMoon = document.getElementById('iconMoon');
+  const iconSun = document.getElementById('iconSun');
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    iconMoon.classList.toggle('hidden', theme === 'light');
+    iconSun.classList.toggle('hidden', theme === 'dark');
+  }
+
+  const savedTheme = localStorage.getItem('tfu_theme');
+  if (savedTheme) applyTheme(savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('tfu_theme', next);
+  });
+
+  const navMenu = document.getElementById('navLinks');
+  const navToggle = document.getElementById('navToggle');
+  const iconBurger = document.getElementById('iconBurger');
+  const iconClose = document.getElementById('iconClose');
+
+  function closeNavMenu() {
+    navMenu.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+    iconBurger.classList.remove('hidden');
+    iconClose.classList.add('hidden');
+  }
+
+  navToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = navMenu.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+    iconBurger.classList.toggle('hidden', isOpen);
+    iconClose.classList.toggle('hidden', !isOpen);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!navMenu.classList.contains('open')) return;
+    if (navMenu.contains(e.target) || navToggle.contains(e.target)) return;
+    closeNavMenu();
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 640) closeNavMenu();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — Matstoree Uploader</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .admin-wrap { max-width: 960px; margin: 0 auto; padding: 32px 20px 64px; }
+  .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .admin-title { font-family: var(--font-display); font-size: 18px; margin: 0; }
+  .admin-sub { color: var(--text-dim); font-size: 13px; margin: 4px 0 0; }
+
+  .login-box { max-width: 360px; margin: 8vh auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+  .login-box h1 { font-size: 17px; margin: 0 0 4px; }
+  .login-box p { color: var(--text-dim); font-size: 13px; margin: 0 0 20px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+  .field input { width: 100%; box-sizing: border-box; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: var(--text); font-size: 14px; font-family: var(--font-body); }
+  .field input:focus { outline: none; border-color: var(--accent); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; font-family: var(--font-body); text-decoration: none; }
+  .btn-primary { background: var(--accent); color: #fff; width: 100%; }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-danger-sm { background: var(--danger); color: #fff; padding: 6px 10px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; }
+  .form-error { color: var(--danger); font-size: 13px; margin: 0 0 12px; min-height: 16px; }
+
+  .toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .toolbar input[type="search"] { flex: 1; min-width: 180px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; }
+
+  table.admin-table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; font-size: 13px; }
+  table.admin-table th, table.admin-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  table.admin-table th { color: var(--text-dim); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; }
+  table.admin-table tr:last-child td { border-bottom: none; }
+  .file-name { word-break: break-all; }
+  .file-link { color: var(--text); text-decoration: none; border-bottom: 1px dashed var(--text-dim); }
+  .file-link:hover { color: var(--accent); border-color: var(--accent); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .badge-active { background: var(--info-soft); color: var(--info); }
+  .badge-expired { background: rgba(224, 82, 82, 0.12); color: var(--danger); }
+  .badge-permanent { background: var(--accent-soft); color: var(--accent); }
+
+  .pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; font-size: 13px; color: var(--text-dim); }
+  .pagination .btn-ghost { padding: 6px 12px; font-size: 13px; }
+  .empty-state { text-align: center; color: var(--text-dim); padding: 40px 0; font-size: 13px; }
+
+  @media (max-width: 640px) {
+    table.admin-table { border: none; background: transparent; border-radius: 0; }
+    table.admin-table thead { display: none; }
+    table.admin-table, table.admin-table tbody, table.admin-table tr, table.admin-table td { display: block; width: 100%; }
+    table.admin-table tr {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+      padding: 4px 12px;
+    }
+    table.admin-table td {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    table.admin-table tr:last-child { margin-bottom: 0; }
+    table.admin-table td:last-child { border-bottom: none; justify-content: flex-end; }
+    table.admin-table td::before {
+      content: attr(data-label);
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+    table.admin-table td.file-name { text-align: right; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid" aria-hidden="true"></div>
+
+<nav class="navbar">
+  <a href="/" class="brand">
+    <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path d="M6 2h12M6 22h12M8 2c0 4 4 6 4 8s-4 4-4 8M16 2c0 4-4 6-4 8s4 4 4 8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand-text">
+      <span class="brand-title">Matstoree Uploader</span>
+      <span class="brand-sub">Panel Admin</span>
+    </span>
+  </a>
+  <a href="/" class="btn btn-ghost">
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Beranda
+  </a>
+</nav>
+
+<div id="loginView" class="login-box">
+  <h1>Login Admin</h1>
+  <p>Masuk untuk memantau dan mengelola file yang telah diunggah.</p>
+  <p class="form-error" id="loginError"></p>
+  <form id="loginForm">
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="btn btn-primary" id="loginBtn">Masuk</button>
+  </form>
+</div>
+
+<div id="dashboardView" class="admin-wrap hidden">
+  <div class="admin-header">
+    <div>
+      <p class="admin-title">Admin Dashboard</p>
+      <p class="admin-sub" id="totalFilesLabel">Memuat data...</p>
+    </div>
+    <button class="btn btn-ghost" id="logoutBtn">Keluar</button>
+  </div>
+
+  <div class="toolbar">
+    <input type="search" id="searchInput" placeholder="Cari nama file...">
+  </div>
+
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Nama File</th>
+        <th>Ukuran</th>
+        <th>Diupload</th>
+        <th>Status</th>
+        <th>Download</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="fileTableBody"></tbody>
+  </table>
+  <div id="emptyState" class="empty-state hidden">Belum ada file yang diunggah.</div>
+
+  <div class="pagination">
+    <span id="pageLabel"></span>
+    <div>
+      <button class="btn btn-ghost" id="prevBtn">← Sebelumnya</button>
+      <button class="btn btn-ghost" id="nextBtn">Selanjutnya →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const savedTheme = localStorage.getItem('tfu_theme');
+if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+
+const loginView = document.getElementById('loginView');
+const dashboardView = document.getElementById('dashboardView');
+const loginForm = document.getElementById('loginForm');
+const loginBtn = document.getElementById('loginBtn');
+const loginError = document.getElementById('loginError');
+const logoutBtn = document.getElementById('logoutBtn');
+const searchInput = document.getElementById('searchInput');
+const fileTableBody = document.getElementById('fileTableBody');
+const emptyState = document.getElementById('emptyState');
+const totalFilesLabel = document.getElementById('totalFilesLabel');
+const pageLabel = document.getElementById('pageLabel');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+const LIMIT = 20;
+let offset = 0;
+let total = 0;
+let search = '';
+let searchDebounce = null;
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
+}
+
+function formatDate(ms) {
+  return new Date(ms).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+}
+
+function statusBadge(expiresAt) {
+  if (expiresAt === null) return '<span class="badge badge-permanent">Permanen</span>';
+  if (expiresAt <= Date.now()) return '<span class="badge badge-expired">Kedaluwarsa</span>';
+  return '<span class="badge badge-active">Aktif hingga ' + formatDate(expiresAt) + '</span>';
+}
+
+function fileUrl(file) {
+  const match = /\.[a-zA-Z0-9]{1,10}$/.exec(file.original_name || '');
+  const ext = match ? match[0].toLowerCase() : '';
+  return '/f/' + encodeURIComponent(file.id) + ext;
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+async function checkSession() {
+  try {
+    const res = await fetch('/admin/api/session');
+    const data = await res.json();
+    if (data.authenticated) {
+      showDashboard();
+    } else {
+      showLogin();
+    }
+  } catch (err) {
+    console.error('Gagal cek session admin:', err);
+    showLogin();
+  }
+}
+
+function showLogin() {
+  loginView.classList.remove('hidden');
+  dashboardView.classList.add('hidden');
+}
+
+function showDashboard() {
+  loginView.classList.add('hidden');
+  dashboardView.classList.remove('hidden');
+  loadFiles();
+}
+
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  loginError.textContent = '';
+  loginBtn.disabled = true;
+  loginBtn.textContent = 'Memproses...';
+
+  try {
+    const res = await fetch('/admin/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value
+      })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      loginError.textContent = data.message || 'Login gagal';
+      return;
+    }
+    loginForm.reset();
+    showDashboard();
+  } catch (err) {
+    loginError.textContent = 'Gagal menghubungi server';
+  } finally {
+    loginBtn.disabled = false;
+    loginBtn.textContent = 'Masuk';
+  }
+});
+
+logoutBtn.addEventListener('click', async () => {
+  await fetch('/admin/api/logout', { method: 'POST' });
+  showLogin();
+});
+
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => {
+    search = searchInput.value.trim();
+    offset = 0;
+    loadFiles();
+  }, 300);
+});
+
+prevBtn.addEventListener('click', () => {
+  if (offset - LIMIT < 0) return;
+  offset -= LIMIT;
+  loadFiles();
+});
+
+nextBtn.addEventListener('click', () => {
+  if (offset + LIMIT >= total) return;
+  offset += LIMIT;
+  loadFiles();
+});
+
+async function loadFiles() {
+  try {
+    const params = new URLSearchParams({ limit: LIMIT, offset, search });
+    const res = await fetch('/admin/api/files?' + params.toString());
+
+    if (res.status === 401) {
+      showLogin();
+      return;
+    }
+
+    const data = await res.json();
+    total = data.total || 0;
+    renderTable(data.files || []);
+    totalFilesLabel.textContent = total + ' file total';
+    const shown = data.files ? data.files.length : 0;
+    pageLabel.textContent = shown === 0 ? '' : `${offset + 1}–${offset + shown} dari ${total}`;
+    prevBtn.disabled = offset === 0;
+    nextBtn.disabled = offset + LIMIT >= total;
+  } catch (err) {
+    console.error('Gagal memuat daftar file:', err);
+    totalFilesLabel.textContent = 'Gagal memuat data — cek koneksi/server';
+  }
+}
+
+function renderTable(files) {
+  fileTableBody.innerHTML = '';
+  emptyState.classList.toggle('hidden', files.length > 0);
+
+  files.forEach((file) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="file-name" data-label="Nama File">
+        <a class="file-link" href="${fileUrl(file)}" target="_blank" rel="noopener noreferrer">${escapeHtml(file.original_name)}</a>
+      </td>
+      <td data-label="Ukuran">${formatSize(file.size)}</td>
+      <td data-label="Diupload">${formatDate(file.uploaded_at)}</td>
+      <td data-label="Status">${statusBadge(file.expires_at)}</td>
+      <td data-label="Download">${file.download_count}</td>
+      <td><button class="btn-danger-sm" data-id="${file.id}">Hapus</button></td>
+    `;
+    fileTableBody.appendChild(tr);
+  });
+
+  fileTableBody.querySelectorAll('button[data-id]').forEach((btn) => {
+    btn.addEventListener('click', () => deleteFile(btn.dataset.id, btn));
+  });
+}
+
+async function deleteFile(id, btn) {
+  if (!confirm('Hapus file ini secara permanen?')) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Menghapus...';
+
+  try {
+    const res = await fetch('/admin/api/files/' + encodeURIComponent(id), { method: 'DELETE' });
+    if (res.status === 401) {
+      showLogin();
+      return;
+    }
+    loadFiles();
+  } catch (err) {
+    console.error('Gagal menghapus file:', err);
+    btn.disabled = false;
+    btn.textContent = 'Hapus';
+  }
+}
+
+checkSession();
+</script>
+</body>
+</html>

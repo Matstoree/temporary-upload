@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matstoree Uploader — Berbagi File Sementara</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-grid" aria-hidden="true"></div>
+
+<nav class="navbar">
+  <a href="/" class="brand">
+    <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path d="M6 2h12M6 22h12M8 2c0 4 4 6 4 8s-4 4-4 8M16 2c0 4-4 6-4 8s4 4 4 8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand-text">
+      <span class="brand-title">Matstoree Uploader</span>
+      <span class="brand-sub">Berbagi file sementara</span>
+    </span>
+  </a>
+  <div class="nav-right">
+    <div class="nav-links" id="navLinks">
+      <a href="/upload" data-view="upload" class="active">Unggah</a>
+      <a href="/documentation" data-view="docs">Dokumentasi</a>
+      <a href="/admin">Admin</a>
+    </div>
+    <button id="themeToggle" class="theme-toggle" aria-label="Ganti tema" type="button">
+      <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.5A9 9 0 1 1 11.5 3a7 7 0 0 0 9.5 9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg id="iconSun" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke-linecap="round"/></svg>
+    </button>
+    <button id="navToggle" class="nav-toggle" aria-label="Buka menu" aria-expanded="false" type="button">
+      <svg id="iconBurger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/></svg>
+      <svg id="iconClose" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+<main id="top">
+
+<div id="uploadView">
+
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-head">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linejoin="round"/><path d="M14 2v6h6" stroke-linejoin="round"/></svg>
+        <span class="stat-label">Total File</span>
+      </div>
+      <span class="stat-value skeleton" id="statFiles"></span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-head">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+        <span class="stat-label">Total Penyimpanan</span>
+      </div>
+      <span class="stat-value skeleton" id="statStorage"></span>
+    </div>
+  </section>
+
+  <section class="upload-section">
+
+    <div class="panel" id="uploadPanel">
+      <h1 class="panel-title">Unggah file</h1>
+      <p class="panel-sub">File akan tetap tersedia hingga masa berlakunya habis.</p>
+
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Pilih file untuk diunggah">
+        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p class="dropzone-text">Seret &amp; lepas file di sini</p>
+        <p class="dropzone-or">atau</p>
+        <button type="button" class="btn btn-outline" id="browseBtn">Pilih file</button>
+        <input type="file" id="fileInput" class="hidden">
+      </div>
+
+      <div class="selected-file hidden" id="selectedFile">
+        <div class="selected-file-info">
+          <span class="selected-name" id="selectedName"></span>
+          <span class="selected-size" id="selectedSize"></span>
+        </div>
+        <button type="button" class="btn-clear" id="clearFileBtn" aria-label="Hapus file">&times;</button>
+      </div>
+
+      <div class="field">
+        <label for="expiry">Masa Berlaku</label>
+        <select id="expiry">
+          <option value="5m">5 Menit</option>
+          <option value="15m">15 Menit</option>
+          <option value="30m">30 Menit</option>
+          <option value="1h" selected>1 Jam</option>
+          <option value="1d">1 Hari</option>
+          <option value="3d">3 Hari</option>
+          <option value="1w">1 Minggu</option>
+          <option value="permanent">Permanen</option>
+        </select>
+      </div>
+
+      <button type="button" class="btn btn-primary btn-block" id="uploadBtn">Unggah</button>
+
+      <div class="progress-wrap hidden" id="progressWrap">
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <span class="progress-label" id="progressLabel">Mengunggah… 0%</span>
+      </div>
+
+      <p class="error-message hidden" id="errorMessage"></p>
+    </div>
+
+    <div class="panel result-panel hidden" id="resultPanel">
+      <div class="result-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2 class="panel-title">Unggahan berhasil</h2>
+
+      <dl class="result-list">
+        <div><dt>Nama File</dt><dd id="resFilename"></dd></div>
+        <div><dt>Ukuran File</dt><dd id="resSize"></dd></div>
+        <div><dt>Masa Berlaku</dt><dd id="resExpiry"></dd></div>
+      </dl>
+
+      <label for="resUrl" class="field-label">URL Unduhan</label>
+      <div class="url-row">
+        <input type="text" id="resUrl" readonly>
+        <button type="button" class="btn btn-outline" id="copyBtn">Salin</button>
+      </div>
+
+      <div class="result-actions">
+        <button type="button" class="btn btn-outline btn-block" id="openBtn">Buka</button>
+        <button type="button" class="btn btn-primary btn-block" id="uploadAnotherBtn">Unggah file lain</button>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="recent-section">
+    <h2 class="section-title">File Terbaru</h2>
+    <div id="recentList" class="recent-list">
+      <div class="recent-item-skeleton skeleton"></div>
+      <div class="recent-item-skeleton skeleton"></div>
+      <div class="recent-item-skeleton skeleton"></div>
+    </div>
+  </section>
+
+
+</div>
+
+  <section id="docs" class="docs-section hidden">
+    <h2 class="section-title">Dokumentasi</h2>
+    <p class="panel-sub">Halaman ini merupakan antarmuka sederhana untuk API HTTP di bawah ini. Anda dapat memanggil API secara langsung untuk mengotomatiskan proses unggah file.</p>
+
+    <div class="docs-grid">
+      <div class="doc-card">
+        <div class="doc-head">
+          <span class="doc-method post">POST</span>
+          <code class="doc-path">/api/upload</code>
+        </div>
+        <p class="doc-desc">Mengunggah sebuah file dan mengembalikan tautan unduhan. Kirim permintaan sebagai <span class="inline-code">multipart/form-data</span>. Endpoint ini dibatasi hingga 4MB per file (batas ukuran permintaan di Vercel); untuk file yang lebih besar gunakan formulir di halaman ini, yang mengunggah langsung ke storage.</p>
+        <ul class="doc-param-list">
+          <li><span class="param-name">file</span><span class="param-desc">file itu sendiri, tipe apa saja</span></li>
+          <li>
+            <span class="param-name">expiry</span>
+            <span class="param-desc param-values">
+              <span class="inline-code">5m</span><span class="inline-code">15m</span><span class="inline-code">30m</span><span class="inline-code">1h</span><span class="inline-code">1d</span><span class="inline-code">3d</span><span class="inline-code">1w</span><span class="inline-code">permanent</span>
+            </span>
+          </li>
+        </ul>
+        <pre>curl -X POST BASE_URL/api/upload \
+  -F "file=@/path/file.jpg" \
+  -F "expiry=1h"</pre>
+        <p class="doc-resp">Mengembalikan JSON berisi <span class="inline-code">id</span>, <span class="inline-code">filename</span>, <span class="inline-code">size</span>, <span class="inline-code">expiry</span>, dan <span class="inline-code">url</span>. Ekstensi file asli otomatis ditambahkan di akhir <span class="inline-code">url</span> (mis. <span class="inline-code">/f/3YL2vUDn.jpg</span>) supaya klien lain mudah menebak tipe filenya.</p>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-head">
+          <span class="doc-method get">GET</span>
+          <code class="doc-path">/f/:id</code>
+        </div>
+        <p class="doc-desc">Mengunduh atau menampilkan pratinjau file. Gambar, video, audio, dan PDF akan terbuka langsung di browser; tipe file lainnya langsung terunduh. Mengembalikan status 404 jika file sudah kedaluwarsa — file yang kedaluwarsa akan dihapus secara otomatis dan tidak tersedia endpoint untuk menghapus file secara manual.</p>
+        <pre>curl -O -J BASE_URL/f/FILE_ID</pre>
+      </div>
+    </div>
+
+    <p class="docs-note">Ganti <span class="inline-code">BASE_URL</span> dengan alamat situs ini. Masa berlaku ditentukan saat file diunggah dan tidak dapat diperpanjang setelahnya.</p>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span>Matstoree Uploader — file terhapus otomatis sesuai jadwal.</span>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
